@@ -221,7 +221,7 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
 });
 
 // Vite middleware for development
-async function startServer() {
+export async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -236,9 +236,17 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+  // Only listen if we are not being imported (e.g. by Vercel)
+  if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+  }
 }
 
-startServer();
+// Support for both TSX dev and Vercel/Production
+if (import.meta.url === `file://${process.argv[1]}`) {
+  startServer();
+}
+
+export default app;
