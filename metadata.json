@@ -1,0 +1,6 @@
+{
+  "name": "Excel Color Lead Manager",
+  "description": "Upload color-coded Excel leads to extract details and filter by row color.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
