@@ -85,9 +85,16 @@ function getHexColor(fill: ExcelJS.Fill | undefined): string | undefined {
 
 app.post("/api/upload", upload.single("file"), async (req, res) => {
   try {
+    if (!process.env.GEMINI_API_KEY) {
+      console.error("Vercel Configuration Error: GEMINI_API_KEY is missing from environment variables.");
+      return res.status(500).json({ error: "Server misconfigured: Missing Gemini API Key on Vercel." });
+    }
+
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
+
+    console.log(`Processing file: ${req.file.originalname} (${req.file.size} bytes)`);
 
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(req.file.buffer);

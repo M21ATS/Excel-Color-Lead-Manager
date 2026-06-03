@@ -41,7 +41,18 @@ export function FileUploader({ onUploadSuccess }: FileUploaderProps) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        if (response.status === 413) {
+          throw new Error("File too large for Vercel (Limit: 4.5MB).");
+        }
+        if (response.status === 504) {
+          throw new Error("Analysis took too long (Vercel timeout). Try a smaller file.");
+        }
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch (e) {
+          errorData = { error: `HTTP ${response.status}: ${response.statusText}` };
+        }
         throw new Error(errorData.error || "Upload failed");
       }
 
